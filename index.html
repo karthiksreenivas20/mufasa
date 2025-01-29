@@ -4,9 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border: 2px solid black;
+        }
+        .cell:hover {
+            background-color: #ddd;
+        }
+        #status {
+            font-size: 1.5em;
+            margin: 10px;
+        }
+        #reset {
+            font-size: 1em;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+
     <h1>Tic-Tac-Toe</h1>
     <div class="board">
         <div class="cell" data-index="0"></div>
@@ -22,4 +58,58 @@
     <p id="status">Player X's turn</p>
     <button id="reset">Reset Game</button>
 
-    <script src="
+    <script>
+        const cells = document.querySelectorAll(".cell");
+        const statusText = document.getElementById("status");
+        const resetButton = document.getElementById("reset");
+        let currentPlayer = "X";
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        function checkWinner() {
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    gameActive = false;
+                    statusText.textContent = Player ${board[a]} wins!;
+                    return;
+                }
+            }
+            if (!board.includes("")) {
+                gameActive = false;
+                statusText.textContent = "It's a draw!";
+            }
+        }
+
+        function handleCellClick(event) {
+            const index = event.target.getAttribute("data-index");
+            if (board[index] || !gameActive) return;
+            
+            board[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            
+            checkWinner();
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            if (gameActive) statusText.textContent = Player ${currentPlayer}'s turn;
+        }
+
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            currentPlayer = "X";
+            statusText.textContent = "Player X's turn";
+            cells.forEach(cell => cell.textContent = "");
+        }
+
+        cells.forEach(cell => cell.addEventListener("click", handleCellClick));
+        resetButton.addEventListener("click", resetGame);
+    </script>
+
+</body>
+</html>
